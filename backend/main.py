@@ -11,6 +11,7 @@ from contextlib import asynccontextmanager
 from app.core.config import settings
 from app.core.database import connect_to_mongo, close_mongo_connection
 from app.api.v1.api import api_router
+import os
 
 
 @asynccontextmanager
@@ -56,7 +57,7 @@ async def health_check():
 if __name__ == "__main__":
     uvicorn.run(
         "main:app",
-        host=settings.HOST,
-        port=settings.PORT,
+        host="0.0.0.0",   # always listen on 0.0.0.0 in cloud
+        port=int(os.environ.get("PORT", 8000)),  # Render sets PORT
         reload=settings.DEBUG
     )
