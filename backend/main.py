@@ -64,9 +64,10 @@ async def health_check():
 
 
 if __name__ == "__main__":
+    port = int(os.environ.get("PORT")) if os.environ.get("PORT") else 10000
     uvicorn.run(
         "main:app",
-        host="0.0.0.0",   # always listen on 0.0.0.0 in cloud
-        port=int(os.environ.get("PORT", 8000)),  # Render sets PORT
+        host="0.0.0.0",
+        port=port,
         reload=settings.DEBUG
     )
