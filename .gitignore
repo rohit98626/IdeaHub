@@ -52,7 +52,6 @@ env/
 uvicorn.*.log
 
 # Backend uploads and temp files
-backend/uploads/
 backend/app/__pycache__/
 
 # Node/React (frontend)
@@ -75,5 +74,3 @@ frontend/.eslintcache
 # OS specific
 ehthumbs.db
 Desktop.ini
-
-

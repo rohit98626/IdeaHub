@@ -16,9 +16,18 @@ import os
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await connect_to_mongo()
-    yield
-    await close_mongo_connection()
+    print("🔄 Connecting to Mongo...")
+    try:
+        await connect_to_mongo()
+        print("✅ Mongo connected")
+        yield
+    except Exception as e:
+        print("❌ Mongo connection failed:", e)
+        yield
+    finally:
+        await close_mongo_connection()
+        print("🔚 Mongo connection closed")
+
 
 
 app = FastAPI(
