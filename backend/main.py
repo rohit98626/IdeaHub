@@ -13,6 +13,7 @@ from app.core.database import connect_to_mongo, close_mongo_connection
 from app.api.v1.api import api_router
 import os
 
+print("🔎 Render PORT variable:", os.environ.get("PORT"))
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
