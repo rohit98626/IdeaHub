@@ -41,7 +41,8 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://fusion-ideahub.vercel.app"
+        "http://localhost:8000",
+        *settings.CORS_ORIGINS
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -67,10 +68,10 @@ async def health_check():
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT")) if os.environ.get("PORT") else 10000
+    port = int(os.environ.get("PORT")) if os.environ.get("PORT") else settings.PORT
     uvicorn.run(
         "main:app",
-        host="0.0.0.0",
+        host=settings.HOST,
         port=port,
         reload=settings.DEBUG
     )

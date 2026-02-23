@@ -38,6 +38,8 @@ class ClusteringService:
             Dictionary containing cluster labels, centroids, and metrics
         """
         try:
+            embeddings = self._prepare_embeddings(embeddings)
+
             if len(embeddings) < 2:
                 return {
                     "labels": [0] * len(embeddings),
@@ -192,6 +194,47 @@ class ClusteringService:
         except Exception as e:
             logger.error(f"Error calculating centroids: {e}")
             return [[0.0] * len(embeddings[0])] * n_clusters
+    
+    def _prepare_embeddings(self, embeddings: List[List[float]]) -> List[List[float]]:
+        """
+        Ensure embeddings are numeric and have consistent dimensions by padding shorter vectors.
+        """
+        if not embeddings:
+            return embeddings
+        
+        prepared_embeddings = []
+        lengths = []
+        for idx, embedding in enumerate(embeddings):
+            if embedding is None:
+                raise ValueError(f"Embedding at index {idx} is None")
+            try:
+                embedding_array = np.asarray(embedding, dtype=float).flatten()
+            except (TypeError, ValueError):
+                raise ValueError(f"Embedding at index {idx} contains non-numeric values")
+            
+            lengths.append(len(embedding_array))
+            prepared_embeddings.append(embedding_array)
+        
+        if not lengths:
+            return embeddings
+        
+        max_length = max(lengths)
+        if len(set(lengths)) > 1:
+            logger.warning(
+                "Inconsistent embedding dimensions detected: %s. "
+                "Padding shorter vectors with zeros to match length %d.",
+                sorted(set(lengths)),
+                max_length
+            )
+        
+        normalized_embeddings = []
+        for embedding_array in prepared_embeddings:
+            if len(embedding_array) < max_length:
+                padding_width = max_length - len(embedding_array)
+                embedding_array = np.pad(embedding_array, (0, padding_width), mode="constant")
+            normalized_embeddings.append(embedding_array.tolist())
+        
+        return normalized_embeddings
     
     def _calculate_silhouette_score(self, embeddings: List[List[float]], labels: List[int]) -> float:
         """Calculate silhouette score for clustering quality"""
